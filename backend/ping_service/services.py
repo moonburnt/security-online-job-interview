@@ -40,8 +40,11 @@ def send_ping(address: AddressModel):
         print(f"{address.url} is unreachable")
 
 
+# Usually threaded tasks are done via MQ like celery
 def run_ping_fetcher():
-    Timer(settings.PING_TIMER, run_ping_fetcher).start()
+    timer = Timer(settings.PING_TIMER, run_ping_fetcher)
+    timer.setDaemon(True)
+    timer.start()
     print("Pinging addesses")
 
     for i in AddressModel.objects.all():

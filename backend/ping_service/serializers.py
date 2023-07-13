@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = AddressModel
-        fields = "__all__"
+        exclude = ("ip",)
 
 class AddressUrlSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,4 +21,7 @@ class PingSerializer(serializers.ModelSerializer):
         model = PingModel
         exclude = ("id",)
 
-
+class PingSerializerMinimal(serializers.ModelSerializer):
+    class Meta:
+        model = PingModel
+        exclude = ("id", "address",)

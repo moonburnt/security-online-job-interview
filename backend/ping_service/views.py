@@ -11,6 +11,19 @@ class AddressView(viewsets.ReadOnlyModelViewSet):
     permission_classses = [AllowAny]
     queryset = models.AddressModel.objects.all()
 
+    @action(
+        methods=("get",),
+        detail=True
+    )
+    def pings(self, request, **kwargs) -> Response:
+        queryset = models.PingModel.objects.filter(address=self.get_object()).order_by("created")
+        serialized = serializers.PingSerializerMinimal(queryset, many=True)
+
+        return Response(
+            serialized.data,
+            status = status.HTTP_200_OK,
+        )
+
 class PingView(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.PingSerializer
     permission_classses = [AllowAny]
