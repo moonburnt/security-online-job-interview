@@ -13,31 +13,49 @@
             let chart;
 
             async function get_pings() {
-                const response = await fetch("http://127.0.0.1:8000/api/ping/latest/");
-                const pings = await response.json();
+                const addr_url = "http://127.0.0.1:8000/api/address/"
+                const addr_list_response = await fetch(addr_url);
+                const addr_list = await addr_list_response.json();
 
                 var data = [];
 
-                for (var i = 0; i < pings.length; i++) {
-                    data.push(
-                        [pings[i]["address"]["url"], parseInt(pings[i]["value"])]
-                    );
+                for (var i = 0; i < addr_list.length; i++) {
+                    var addr_response = await fetch(addr_url+addr_list[i]["id"]+"/pings/");
+                    var pings = await addr_response.json();
+
+                    var addr_ping_data = [addr_list[i]["url"], []];
+
+                    pings.forEach(item => {
+                        // addr_ping_data[1].push([item["created"], parseInt(item["value"])]);
+                        addr_ping_data[1].push([Date.parse(item["created"]), parseInt(item["value"])]);
+                    })
+                    data.push(addr_ping_data);
                 }
 
                 return await data;
             }
 
             function plot_graph(data) {
-                // create a column series and set the data
-                chart.data(data);
+                chart.data([]);
+                data.forEach(ldata => {
+                    let series = chart.line(ldata[1]);
+                    series.connectMissingPoints(true);
+                    series.name(ldata[0]);
+                })
             }
 
             function create_graph() {
-                // create a chart
-                chart = anychart.column();
+                chart = anychart.line();
 
                 // set the container id
                 chart.container("container");
+
+                chart.legend(true);
+
+                var dateScale = anychart.scales.dateTime();
+                var dateMinorTicks = dateScale.minorTicks();
+                dateMinorTicks.interval(0,0,0,1);
+                chart.xScale(dateScale);
 
                 var title = chart.title();
                 title.enabled(true);
