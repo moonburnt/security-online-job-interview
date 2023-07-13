@@ -4,12 +4,21 @@ import logging
 
 log = logging.getLogger(__name__)
 
-class PingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PingModel
-        fields = "__all__"
-
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = AddressModel
         fields = "__all__"
+
+class AddressUrlSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AddressModel
+        fields = ("url",)
+
+class PingSerializer(serializers.ModelSerializer):
+    address = AddressUrlSerializer()
+
+    class Meta:
+        model = PingModel
+        exclude = ("id",)
+
+

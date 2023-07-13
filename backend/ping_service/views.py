@@ -5,12 +5,6 @@ from rest_framework.decorators import api_view, action
 from . import serializers
 from . import models
 
-# address - returns addresses
-# address/pings - returns pings associated with address
-# pings - returns list of pings
-# recent - returns all latest pings for all addresses
-
-# class AddressView(viewsets.List)
 
 class AddressView(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.AddressSerializer
@@ -22,14 +16,20 @@ class PingView(viewsets.ReadOnlyModelViewSet):
     permission_classses = [AllowAny]
     queryset = models.PingModel.objects.all()
 
-    # @action(
-    #     methods=("get",),
-    #     detail=False,
-    # )
-    # def get_latest(self, request, **kwargs) -> Response:
+    @action(
+        methods=("get",),
+        detail=False,
+    )
+    def latest(self, request, **kwargs) -> Response:
+        """Get latest pings to all addresses"""
 
-    #     self.get_queryset().filter()
+        # TODO: rework into queryset magic
+        ret = []
 
-# @api_view(["GET"])
-# def get_recent_view(request):
-#     return
+        for i in models.AddressModel.objects.all():
+            ret.append(self.get_serializer(i.pings.order_by("created").last()).data)
+
+        return Response(
+            data = ret,
+            status = status.HTTP_200_OK,
+        )
