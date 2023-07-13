@@ -1,5 +1,7 @@
 from ping3 import ping
 from .models import AddressModel, PingModel
+from django.conf import settings
+from threading import Thread, Timer
 import logging
 
 log = logging.getLogger(__name__)
@@ -36,3 +38,13 @@ def send_ping(address: AddressModel):
 
     else:
         print(f"{address.url} is unreachable")
+
+
+def run_ping_fetcher():
+    Timer(settings.PING_TIMER, run_ping_fetcher).start()
+    print("Pinging addesses")
+
+    for i in AddressModel.objects.all():
+        t = Thread(target=send_ping,args=[i])
+        t.setDaemon(True)
+        t.start()
