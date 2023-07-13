@@ -1,0 +1,59 @@
+<!-- self-contained solution with no external dependencies -->
+
+<!-- Load library from cdn instead of installing it locally -->
+<head>
+    <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-base.min.js"
+    type="text/javascript"></script>
+</head>
+
+<!-- Use library with inline js container -->
+<body>
+    <div id="container" style="width: 500px; height: 400px;">
+        <script>
+            let chart;
+
+            async function get_pings() {
+                const response = await fetch("http://127.0.0.1:8000/api/ping/latest/");
+                const pings = await response.json();
+
+                var data = [];
+
+                for (var i = 0; i < pings.length; i++) {
+                    data.push(
+                        [pings[i]["address"]["url"], parseInt(pings[i]["value"])]
+                    );
+                }
+
+                return await data;
+            }
+
+            function plot_graph(data) {
+                // create a column series and set the data
+                chart.data(data);
+            }
+
+            function create_graph() {
+                // create a chart
+                chart = anychart.column();
+
+                // set the container id
+                chart.container("container");
+
+                var title = chart.title();
+                title.enabled(true);
+                title.text("Pings graph");
+                // initiate drawing the chart
+                chart.draw();
+            }
+
+            function run_update_graph() {
+                get_pings().then(plot_graph, console.log);
+                console.log("hi");
+            }
+
+            create_graph();
+            run_update_graph();
+            setInterval(run_update_graph, 30000);
+          </script>
+    </div>
+</body>

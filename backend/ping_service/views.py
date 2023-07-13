@@ -1,10 +1,10 @@
+from django.shortcuts import render
 from rest_framework import status, viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import action
 from . import serializers
 from . import models
-
 
 class AddressView(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.AddressSerializer
@@ -33,3 +33,7 @@ class PingView(viewsets.ReadOnlyModelViewSet):
             data = ret,
             status = status.HTTP_200_OK,
         )
+
+
+def get_chart(request):
+    return render(request, f'index.html')
