@@ -1,24 +1,33 @@
 from django.db import models
+import logging
+
+log = logging.getLogger(__name__)
 
 
-class PingModel(models.Model):
-    value = models.FloatField()
-    created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Ping to {self.pinged_address} on {self.created}: {self.value}"
-
-
+# Validation is done in django admin
 class AddressModel(models.Model):
-    url = models.URLField(
+    url = models.CharField(
         unique=True,
+        max_length=80,
     )
-    pings = models.ForeignKey(
-        to=PingModel,
-        related_name="pinged_address",
-        null=True,
-        on_delete=models.CASCADE,
+
+    ip = models.CharField(
+        editable=False,
+        max_length=46,
     )
 
     def __str__(self):
         return self.url
+
+class PingModel(models.Model):
+    value = models.FloatField()
+    address = models.ForeignKey(
+        to=AddressModel,
+        related_name="pings",
+        null=False,
+        on_delete=models.CASCADE,
+    )
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Ping to {self.pinged_address} on {self.created}: {self.value}"
