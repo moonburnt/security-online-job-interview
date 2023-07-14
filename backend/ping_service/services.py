@@ -26,10 +26,8 @@ log = logging.getLogger(__name__)
 def send_ping(address: AddressModel):
     response = ping(address.url, unit="ms", timeout=8)
 
-    print(response)
-
     if response:
-        print(f"Pinged {address.url} for {response} ms")
+        log.info(f"Pinged {address.url} for {response} ms")
 
         ping_instance = PingModel.objects.create(
             value = response,
@@ -37,7 +35,7 @@ def send_ping(address: AddressModel):
         )
 
     else:
-        print(f"{address.url} is unreachable")
+        log.warning(f"{address.url} is unreachable")
 
 
 # Usually threaded tasks are done via MQ like celery
@@ -45,7 +43,7 @@ def run_ping_fetcher():
     timer = Timer(settings.PING_TIMER, run_ping_fetcher)
     timer.setDaemon(True)
     timer.start()
-    print("Pinging addesses")
+    log.info("Pinging addresses")
 
     for i in AddressModel.objects.all():
         t = Thread(target=send_ping,args=[i])

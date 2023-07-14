@@ -88,6 +88,33 @@ STATIC_ROOT = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[%(asctime)s][%(name)s][%(levelname)s] %(message)s",
+            "datefmt": "%d.%m.%y %H:%M:%S",
+        },
+        "small": {
+            "format": "[%(levelname)s] %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}
+
 # REST_FRAMEWORK = {
 #     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 #     'PAGE_SIZE': 10
